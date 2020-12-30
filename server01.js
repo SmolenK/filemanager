@@ -1,27 +1,19 @@
-//zmienne, stałe
-
 var express = require("express")
 var app = express()
-var PORT = process.env.PORT || 3000; // bardzo istotna linijka - port zostaje przydzielony przez Heroku
-
-//funkcje na serwerze, obsługujące konkretne adresy
-// w przeglądarce
-
+var PORT = process.env.PORT || 3000; 
 var path = require("path")
 var formidable = require('formidable')
 var hbs = require('express-handlebars')
 
 app.use(express.static('static'))
 
-app.set('views', path.join(__dirname, 'views'))          // ustalamy katalog views
+app.set('views', path.join(__dirname, 'views'))
 app.engine('hbs', hbs({
     defaultLayout: 'main01.hbs',
     extname: '.hbs',
     partialsDir: "views/partials",
-}))    // domyślny layout, potem można go zmienić
-app.set('view engine', 'hbs')                            // określenie nazwy silnika szablonów
-
-
+})) 
+app.set('view engine', 'hbs') 
 
 var context = {
     table_headers: ['id', 'obraz', 'name', 'size', 'type', '-', '-', '-'],
@@ -30,14 +22,14 @@ var context = {
 }
 
 app.get("/", function (req, res) {
-    res.render('upload.hbs', context)    // nie podajemy ścieżki tylko nazwę pliku
+    res.render('upload.hbs', context)
 })
 
 app.post('/handleUpload', function (req, res) {
     var form = new formidable.IncomingForm()
-    form.uploadDir = __dirname + '/static/upload/'       // folder do zapisu zdjęcia
-    form.keepExtensions = true                           // zapis z rozszerzeniem pliku
-    form.multiples = true                                // zapis wielu plików                          
+    form.uploadDir = __dirname + '/static/upload/' 
+    form.keepExtensions = true        
+    form.multiples = true                              
     form.parse(req, function (err, fields, files) {
         function createEntry(element) {
             let obraz
@@ -67,11 +59,11 @@ app.post('/handleUpload', function (req, res) {
             })
         }
 
-        if (Array.isArray(files.imagetoupload) == true) { // multiple files
+        if (Array.isArray(files.imagetoupload) == true) { 
             for (element of files.imagetoupload) {
                 createEntry(element)
             }
-        } else { //single file
+        } else { 
 
             createEntry(files.imagetoupload)
         }
@@ -80,7 +72,7 @@ app.post('/handleUpload', function (req, res) {
 })
 
 app.get("/filemanager", function (req, res) {
-    res.render('filemanager.hbs', context)    // nie podajemy ścieżki tylko nazwę pliku
+    res.render('filemanager.hbs', context)   
 })
 
 app.get("/info", function (req, res) {
@@ -98,7 +90,7 @@ app.get("/info", function (req, res) {
             }
         }
     }
-    res.render('info.hbs', context_new)    // nie podajemy ścieżki tylko nazwę pliku
+    res.render('info.hbs', context_new)    
 })
 
 app.get("/reset", function (req, res) {
@@ -118,12 +110,7 @@ app.get("/download", function (req, res) {
 })
 
 
-//nasłuch na określonym porcie
-
 app.listen(PORT, function () {
     console.log("start serwera na porcie " + PORT)
     console.log("ścieżka do katalogu głównego aplikacji: " + __dirname)
 })
-
-
-
